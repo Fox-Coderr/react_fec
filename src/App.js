@@ -71,12 +71,10 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state.items)
     let items = []
     if(this.state.items){
       for(let item of this.state.items){
         let url = "http://localhost:8101/images/"+item.image
-        console.log(url)
         items.push(
           <Grid item lg={3} md={4} sm={6} >
             <img src={url} ></img>
