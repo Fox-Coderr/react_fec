@@ -8,10 +8,16 @@ class App extends Component {
 
   constructor(props) {
     super(props);
+    let token = false
+    if(sessionStorage.getItem('token')){
+      token = true
+    }
+
     this.state = {
       login: '',
       password: '',
-      items: []
+      items: [],
+      loggedIn: token
     };
     this.handleChange = this.handleChange.bind(this);
     this.login = this.login.bind(this);
@@ -23,7 +29,7 @@ class App extends Component {
   };
 
   login(){
-    fetch('http://localhost:8101/graphql', {
+    fetch('http://localhost:8100/graphql', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -38,14 +44,17 @@ class App extends Component {
     }).then(
       response => response.json()
     ).then(
-      response => console.log(response.data['signIn'].token)
+      response => {
+        sessionStorage.setItem('token', response.data['signIn'].token)
+        this.setState({loggedIn : true})
+      }
     ).catch(error => {
       console.log(error)
     });
   }
 
   getItens(){
-    fetch('http://localhost:8101/graphql', {
+    fetch('http://localhost:8100/graphql', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -74,7 +83,7 @@ class App extends Component {
     let items = []
     if(this.state.items){
       for(let item of this.state.items){
-        let url = "http://localhost:8101/images/"+item.image
+        let url = "http://localhost:8100/images/"+item.image
         items.push(
           <Grid item lg={3} md={4} sm={6} >
             <img src={url} ></img>
@@ -83,11 +92,23 @@ class App extends Component {
         )
       }
     }
+    let login
+    if(this.state.loggedIn){
+      login = (
+        <div className="header">
+          Welcome User
+        </div> 
+      )
+    }else{
+      login = (
+        <div className="header">
+          <ModalLogin login={this.state.login} password={this.state.password} handleChange={this.handleChange} loginFunction={this.login} />
+        </div> 
+      )      
+    }
     return (
       <div className="App">
-        <div className="header">
-            <ModalLogin login={this.state.login} password={this.state.password} handleChange={this.handleChange} loginFunction={this.login} />
-        </div> 
+        {login}
         <div className='image'>
           <Grid container spacing={2}>
             {items}
