@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Grid from '@material-ui/core/Grid';
 import './App.css';
 import ModalLogin from './modal/login'
+import ModalItem from './modal/item'
 
 
 class App extends Component {
@@ -17,10 +18,13 @@ class App extends Component {
       login: '',
       password: '',
       items: [],
-      loggedIn: token
+      loggedIn: token,
+      quantity: 1,
+      loginAlert:false
     };
     this.handleChange = this.handleChange.bind(this);
     this.login = this.login.bind(this);
+    this.addCart = this.addCart.bind(this);
     this.getItens()
   }
 
@@ -51,6 +55,35 @@ class App extends Component {
     ).catch(error => {
       console.log(error)
     });
+  }
+  
+  addCart(item){
+    console.log(item.id, parseInt(this.state.quantity,10))
+    if(this.state.loggedIn){
+      fetch('http://localhost:8100/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          "x-token": sessionStorage.getItem('token')
+        },
+        body: JSON.stringify({
+          query: `mutation{
+            addItem(itemId: ${item.id}, quantity: ${parseInt(this.state.quantity,10)})
+          }`
+        })
+      }).then(
+        response => response.json()
+      ).then(
+        response => {
+          console.log(response)
+          if(response.data['addItem']){
+            alert('Item adicionado com sucesso')
+          }
+        }
+      ).catch(error => {
+        console.log(error)
+      });
+    }
   }
 
   getItens(){
@@ -83,12 +116,10 @@ class App extends Component {
     let items = []
     if(this.state.items){
       for(let item of this.state.items){
-        let url = "http://localhost:8100/images/"+item.image
         items.push(
           <Grid item lg={3} md={4} sm={6} >
-            <img src={url} ></img>
-            <p>{item.name}</p>
-          </Grid>    
+          <ModalItem item={item} handleChange={this.handleChange} addCart={this.addCart} loggedIn={this.state.loggedIn}/>   
+          </Grid>
         )
       }
     }

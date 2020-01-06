@@ -13,3 +13,17 @@
 .image{
   margin: 2em;
 }
+
+.itemName{
+  margin-bottom: 0em;
+}
+
+.itemStock{
+  margin-top: 0em;
+  margin-bottom: 0em;
+}
+
+.itemPrice{
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
