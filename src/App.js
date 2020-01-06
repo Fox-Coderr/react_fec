@@ -78,6 +78,7 @@ class App extends Component {
           console.log(response)
           if(response.data['addItem']){
             alert('Item adicionado com sucesso')
+            this.getItens()
           }
         }
       ).catch(error => {
@@ -118,7 +119,7 @@ class App extends Component {
       for(let item of this.state.items){
         items.push(
           <Grid item lg={3} md={4} sm={6} >
-          <ModalItem item={item} handleChange={this.handleChange} addCart={this.addCart} loggedIn={this.state.loggedIn}/>   
+            <ModalItem key={item.id} item={item} handleChange={this.handleChange} addCart={this.addCart} loggedIn={this.state.loggedIn}/>   
           </Grid>
         )
       }
